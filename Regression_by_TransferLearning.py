@@ -3,14 +3,14 @@ import pandas as pd
 import cv2
 import os
 import glob
-from sklearn.model_selection import train_test_split,KFold
+from sklearn.model_selection import KFold
 import datetime
 from sklearn.metrics import (mean_squared_error,mean_absolute_error,mean_absolute_percentage_error)
 
 
 
 def print_results(lst_mse,lst_rmse,lst_mae,lst_mape,lst_times,model_name):    
-    import numpy as np
+
     results_path=f'./results_{model_name}.txt'
     f1=open(results_path,'a')
 
@@ -80,6 +80,7 @@ def read_data():
     images=[]
     labels=[]
     for address in image_addresses:
+        
         # Load labels (age)
         image_name=os.path.splitext(os.path.basename(address))[0]
         age=image_name.split('Age')[1].split('_')[0]
@@ -122,7 +123,6 @@ for train ,test in kf.split(images, labels):
     # Load model
     model,model_name=create_model()
 
-
     # Prepare the model
     model.fit(x_train,y_train, epochs=10, batch_size=128)
     for layer in model.layers[:-10]:
@@ -139,7 +139,7 @@ for train ,test in kf.split(images, labels):
 
     predicts=model.predict(x_test)
     actuals=y_test
-    model.save(f'./results/Deep_models/{model_name}_fold{fold_number}.h5')
+    model.save(f'./results/{model_name}_fold{fold_number}.h5')
 
     # Calculate evaluation metrics
     lst_mse.append(mean_squared_error(actuals,predicts))
@@ -148,9 +148,8 @@ for train ,test in kf.split(images, labels):
     lst_mape.append(mean_absolute_percentage_error(actuals,predicts))
     lst_times.append(training_time)
 
-
     # Save predictions (actuals and predicts)
-    predicts_path=f'./results/Deep_models/{model_name}_predicts_fold{fold_number}.xlsx'
+    predicts_path=f'./results/{model_name}_predicts_fold{fold_number}.xlsx'
     actuals=pd.DataFrame(actuals)
     predicts=pd.DataFrame(predicts)
     merged_df=pd.concat([actuals,predicts],axis=1)

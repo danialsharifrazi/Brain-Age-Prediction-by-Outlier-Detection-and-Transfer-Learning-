@@ -11,23 +11,24 @@ def load_images_with_ids(image_folder):
     images = []
     image_ids = []
     
-    # Traverse the directory and load images
     for root, _, files in os.walk(image_folder):
         folder_id = os.path.basename(root)  
         for file in files:
             if file.endswith(('.dcm', '.mnc')):
                 file_path = os.path.join(root, file)
                 if re.search(r'.*dcm$',file_path)!=None:               
+                    
                     # Load MNC image
                     img=pydicom.dcmread(file_path)
                     img=img.pixel_array
                 else:
+                    
                     # Load DCM image
                     img=nib.load(file_path)
                     img=img.get_fdata()
                     img=img[:,:,img.shape[2]//2]
                 
-                img=cv2.resize(img,(120,100))
+                img=cv2.resize(img,(224,224))
                 img=img.astype('uint8')               
                 images.append(img)
 
@@ -64,23 +65,14 @@ def allocate_labels_to_images(images, image_ids, labels_dict):
 def main(image_folder, csv_file):
     # Load images and their IDs
     images, image_ids = load_images_with_ids(image_folder)
-    
-    # Load labels from the CSV
     labels_dict = load_labels_from_csv(csv_file)
-    
-    # Allocate labels to images
     image_labels = allocate_labels_to_images(images, image_ids, labels_dict)
-    
-    # Now you can return the images and labels as numpy arrays
     return images, image_labels
 
 
-# Example usage:
-# image_folder='D:/A Researcher/Articles/1 Datasets/ICBM T1-Weighted/mini'
+
 image_folder='./ICBM T1-Weighted/ICBM'
-
 csv_file='./ICBM_T1_Labels.csv'
-
 images, image_labels = main(image_folder, csv_file)
 
 
