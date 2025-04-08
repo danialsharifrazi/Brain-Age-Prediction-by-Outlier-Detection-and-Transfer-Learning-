@@ -27,7 +27,7 @@ def print_results(lst_mse,lst_rmse,lst_mae,lst_mape,lst_times,model_name):
         f1.write('\n MAE: '+str(lst_mae[i]))
         f1.write('\n MAPE: '+str(lst_mape[i]))
         f1.write('\nTraining Time: '+str(lst_times[i]))
-        f1.write('\n\n___________________\n')
+        f1.write('\n\n__________________\n')
     f1.close()
 
 
